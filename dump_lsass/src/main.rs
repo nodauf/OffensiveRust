@@ -150,7 +150,7 @@ fn main() {
                     args.lsass_dump_filename
                 );
             } else {
-                error!("{}", obfstr!("Error while dumping"));
+                error!("{}: {}", obfstr!("Error while dumping"), GetLastError());
             }
         }
         let status = CloseHandle(file_handle);
